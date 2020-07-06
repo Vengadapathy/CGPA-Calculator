@@ -1,0 +1,419 @@
+<html>
+    <head>
+        <title>CGPA Calculator</title>
+        <!-- <link rel='Stylesheet' type='text/css' href='/Style.css'> -->
+        
+        <style>
+            @import url('https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@600&display=swap');
+
+            body{   
+                background-image: linear-gradient(to right,#2faceb,lightblue,lightblue,skyblue,#2faceb);
+                background-color: #2faceb;
+                text-align: center;
+                font-family:'Josefin Sans','Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+                font-size: 20px;
+            }
+            .invisible{
+                display: none;
+            }
+
+            .title {
+                display: inline-block;
+                font-family:'Josefin Sans','Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+                font-size: 50px;
+                width: 40%;
+                height: 50px;
+                background-color: dodgerblue;
+                /* background-size: 200px; */
+                color: whitesmoke;
+                border-radius: 25px;
+                margin: 30px 50px;
+                padding-left: 10px;
+                padding: 20px 5px;
+                border-color: #ffffff;
+                border: 2px solid white;
+            }
+
+            .heading{
+                height: 40px;
+                margin: 20px;
+                text-transform: uppercase;
+            }
+            .heading span{
+                    border-bottom: 5px dotted whitesmoke;
+
+            }
+
+            .selectvalue{
+				margin:20px;
+            }
+
+            #sub , select,option{
+                font-family:'Josefin Sans','Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+                font-size: 20px;
+                width:auto;
+                text-align: center;
+                background-color: transparent;
+                border: 3px solid whitesmoke;
+                border-radius: 20px;
+                width: 200px;
+                text-align: center;
+            }
+            #sub:hover,select:hover,option:hover{
+                background-color: transparent; 
+                color:dodgerblue;
+            }
+            #sub:focus,select:focus{
+                background-color: transparent;
+            }
+
+            button{
+                font-family:'Josefin Sans','Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+                font-size: 20px;
+                background-color: dodgerblue; 
+                color: whitesmoke;
+                width: auto;
+                height: auto;
+                border: 2px solid #fdfdfd;
+                border-radius: 20px ;
+            }
+            button:hover{
+                background-color: whitesmoke; 
+                color: dodgerblue;
+                box-shadow: 0 0 10px skyblue,0 0 10px dodgerblue,0 0 10px rgb(75, 75, 255);
+            }
+            /* Table Style */ 
+
+            #subject-table{
+                padding : 25px;
+                margin: auto;
+                min-height: 100px;
+            }
+            table {
+                box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+                margin: auto;
+                font-family: arial, sans-serif;
+                border-collapse: collapse;
+                width: 75%;
+                font:20px 'Raleway','Times New Roman', sans-serif;
+            }
+            td, th {
+                color: whitesmoke;
+                text-align: center;
+                padding: 8px;
+                border: none;
+            }
+            th{
+                background-color: #2faceb;
+                border: 5px solid #2faceb;
+            }
+            tr{
+                background-color: #fdfdfd;
+            }
+            tr:nth-child(even) {
+                background-color: #f7f7f7;
+            }
+            td > label{
+                color: black;
+            }
+            .notfilled{
+                border: 3px solid red;
+            }
+
+
+        </style>
+    
+    </head>
+    <body>
+       <div id="default">
+            <span class='title'><label> CGPA Calculator </label></span>
+            <div class='heading'><span>Select your Department, Semester and total number of subjects in semester</span></div>
+            <div class='selectvalue'>
+                <label class='data'>Department : </label>
+                <select id='dept'>
+                    <option value='-'>-Department-</option>
+                </select>
+            </div>
+
+            <div class='selectvalue'>
+                <label class='data'>Semester : </label>
+                <select id='sem'>
+                    <option value='-'>-Semester-</option>
+                    <option>1</option>
+                    <option>2</option>
+                    <option>3</option>
+                    <option>4</option>
+                    <option>5</option>
+                    <option>6</option>
+                    <option>7</option>
+                    <option>8</option>
+                </select>
+            </div>
+
+           <div class='selectvalue'>
+            <label class='data'>No. of subjects : </label>
+            <select id="sub">
+                <option value ='-'>-Subject-</option>
+                <option>1</option>
+                <option>2</option>
+                <option>3</option>
+                <option>4</option>
+                <option>5</option>
+                <option>6</option>
+                <option>7</option>
+                <option>8</option>
+                <option>9</option>
+                <option>10</option>
+                <!-- <option>none</option> -->
+            </select>
+            </div>
+       </div>
+       <button id='getsub'>Get Subjects</button>
+       <div id="subject-table">
+           
+       </div>
+        <button id="cgpa"  class="invisible">Calculate CGPA</button>
+    </body>
+</html>
+
+<!-- <script src="jQuery.js"></script> -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+    $(document).ready(function(){
+    //GLOBAL VARIABLES    
+    var deptList ;
+    var subjectList ;
+
+    //ONLOAD DO THIS
+    $.ajax({
+			method:'GET',
+			url:'cgpa',
+			data:{process:'Department'},
+			success: function(data){
+				deptList = data ;
+				populateDeptmenu();
+			}
+    });        
+
+//     //Static variables
+        var tableHeadVal = ["Subject","Subject-Type","Credit","Grade","Grade points","Total credit"];
+        var subType = ["TH","PR","OT"];
+        var credit = ["1","2","4"];
+        var gradeCredit = { "S":"10" , "A":"9" , "B":"8" , "C":"7" , "D":"6" , "E":"5" , "F":"0" };
+
+//     //Dynamic values
+        var subCount ;
+        
+
+//     //Events
+        $('#getsub').click(function(){
+            if($('#dept').val() === '-' || $('#sem').val() === '-' || $('#sub').val() === '-'){
+                alert("Please select all datas");
+            } else {
+                $.ajax({
+                    method:'GET',
+                    url:'cgpa',
+                    data:{process:'subject',deptname:$('#dept').val(),sem:$('#sem').val()},
+                    success: function(data){
+                        subCount = $('#sub').val();
+                        subjectList = data ;
+						validate();
+                    }
+                });
+
+            }
+        });
+
+        function validate(){
+            $("#subject-table").html(createSubjectDiv());
+            $("#cgpa").show();
+
+            $('table > tbody > tr > td > select').change(function(){
+               // Confirming whether previous subject data are filled or not
+               // disabling already selected subjects in below rows
+               console.log($(this));
+               console.log('Changed');
+                if($(this).closest('td').index() === 0 && checkAll($(this).closest('tbody > tr'))){
+                    alert("Please fill previous row");
+                    $(this).prop('selectedIndex',0);
+                } else if($(this).closest('td').index() === 0){
+                    var selectedIndex = $(this). children("option:selected"). index();
+                    console.log(selectedIndex);
+                    if(selectedIndex === 0){
+                        $(this).closest('tr').nextAll().find('option').prop('disabled',false);
+                    }else{
+						disableSelected($(this).closest('tr').next());
+                    }
+                    clearBelowRows($(this).closest('tr'));
+                } else if($(this).closest('td').index() >= 2 ){
+                    calculateValues($(this).closest('tr'));
+                }
+
+                //if any select menu is set to default value or deselected, set next select menus as disabled
+                if($(this).val() == '-'){
+                    $(this).parent().nextAll().children().prop('selectedIndex',0).attr("disabled",true);
+                    $(this).closest('tr').find('label').remove();
+                }else{
+                    $(this).parent().next().children().attr("disabled",false);
+                }
+            });
+        }
+//         //on button click calculate CGPA
+       
+        $('#cgpa').click(function(){
+            var subMap = {} ;
+        	var checkStatus = true ;
+            $('table >tbody > tr ').each(function(){
+					var grade = $(this).find('td:nth-child(4) > select').val() ;
+					var subcode = $(this).find('td:first-child > select').val()
+					if(grade === '-'){
+						checkStatus = false ;
+						return false ;
+					} else {
+						subMap[subcode] = subjectList[subcode];
+						subMap[subcode].grade=grade;
+					}
+				console.log(subMap);	
+            });
+            console.log(subMap);
+            if(checkStatus){
+            	console.log(subMap);
+            	$.ajax({
+        			method:'POST',
+        			url:'cgpa',
+        			data:{reqData:JSON.stringify(subMap)},
+        			success: function(data){
+        				console.log(data);
+        				alert("Your CGPA is "+data.cgpa);
+        			}
+        		});
+                resetTable();
+            }else{
+            	alert("Fill all the rows");
+            }
+        });
+
+//     //FUNCTIONS
+
+        function populateDeptmenu(){
+            for(var index in deptList){
+                $('#dept').append($("<option/>").text(deptList[index].deptName));
+            }
+        }
+
+        //Creates the table with required subject values
+        function createSubjectDiv(){
+            var newDiv = $("<div/>");
+            var table = $("<table/>").attr("id","tb1");
+            var body = $('<tbody/>').addClass('body');
+            table.append($('<thead/>').append(createTableHead)).addClass('head');
+            for(var index = 0 ; index < subCount ; index++ ){
+                var row = $("<tr/>").addClass('datarow');
+                for(var value of tableHeadVal){
+                    switch(value){
+                        case "Subject":
+                            row.append($("<td/>").html(createSubCell()));
+                            break;
+                        case "Subject-Type":
+                            row.append($("<td/>").html(createSubTypeCell().attr("disabled",true)));
+                            break;
+                        case "Credit":
+                            row.append($("<td/>").html(createCreditCell().attr("disabled",true)));
+                            break;
+                        case "Grade":
+                            row.append($("<td/>").html(createGradeCell().attr("disabled",true)));
+                            break;
+                        case "Grade points" :   case "Total credit" :
+                            row.append($("<td/>"));
+                            break;
+                    }
+                }
+                body.append(row);
+            }
+            return  newDiv.append(table.append(body)) ;
+        }
+
+        function createTableHead(){
+            var headRow = $("<tr/>").addClass('headrow');
+            for(var value of tableHeadVal){
+                headRow.append($("<th/>").text(value));
+            }
+            return headRow;
+        }
+
+        function createSubCell(){
+            var selectTag = $("<select/>").append($("<option/>").text("-Subject-").val("-")).addClass('tableselect');
+            for(var subject in subjectList){
+                selectTag.append($("<option/>").text(subjectList[subject].subjectName).attr('value',subjectList[subject].subjectCode));
+            }
+            return selectTag;
+        }
+
+        function createSubTypeCell(){
+            var selectTag = $("<select/>").append($("<option/>").text("-Subject Type-").val("-"));
+            for(var index of subType ){
+                selectTag.append($("<option/>").text(index));
+            }
+            return selectTag;
+        }
+
+        function createCreditCell(){
+            var selectTag = $("<select/>").append($("<option/>").text("-Credit-").val("-"));
+            for(var index of credit ){
+                selectTag.append($("<option/>").text(index));
+            }
+            return selectTag;
+        }
+
+        function createGradeCell(){
+            var selectTag = $("<select/>").append($("<option/>").text("-Grade-").val("-"));
+            for(var index in gradeCredit){
+                selectTag.append($("<option/>").text(index));
+            }
+            return selectTag;
+        }
+
+        function checkAll(row){
+            var status = false ;
+            $('table > tbody > tr:lt('+row.index()+')').each(function(){
+                $(this).find('select').each(function(){
+                    if($(this).val() == '-'){ 
+                        // $(this).closest('tr').delay(3000).animate('border','2px solid red').delay(3000).animate('border','none');
+                        status = true ;
+                        return false;
+                    }
+                });
+            });
+            return status;
+        }
+
+        function clearBelowRows(row){
+            row.nextAll().find('td > select:first-child').prop('selectedIndex',0);
+            row.nextAll().find('td > select:gt(0)').attr('disabled',true);
+            row.nextAll().find('label').remove();
+        }
+
+        function calculateValues(row){
+            var cpt = row.find('td:nth-child(3) > select').val();
+            var gpt = row.find('td:nth-child(4) > select').val();
+            row.find('td:nth-child(5)').html($('<label/>').text(gradeCredit[gpt]));
+            if( ! isNaN(gradeCredit[gpt])){
+                row.find('td:nth-child(6)').html($('<label/>').text(gradeCredit[gpt] * cpt));
+            }
+        }
+        
+        function disableSelected(row){
+        	row.prevAll().find('td:first-child > select:first-child > option:selected').each(function(){
+        		console.log($(this).index());
+        		row.find('td:first-child > select:first-child > option:eq('+$(this).index()+')').attr('disabled',true);
+        	});
+        	console.log(row.prevAll().find('td:first-child > select:first-child > option:selected'));
+        }
+
+        function resetTable(){
+            $('tbody > tr').find('td > select:first-child').prop('selectedIndex',0).find('option').attr('disabled',false);
+            $('tbody > tr').find('td > select:gt(0)').attr('disabled',true);
+            $('tbody > tr').find('label').remove();
+        }
+    });
+</script>

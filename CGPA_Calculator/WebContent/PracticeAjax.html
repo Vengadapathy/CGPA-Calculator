@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+	<div id="div1">
+		<button id='btn'>Click</button>
+	</div>
+	
+	<div id="div2">
+	</div>
+	
+</body>
+</html>
+<script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
+
+<script type="text/javascript">
+
+$(document).ready(function(){
+	
+	var subjectList ;
+	
+	
+	$('#btn').click(function(){
+		$.ajax({
+			method:'GET',
+			url:'cgpa',
+			data:{process:'Subject',deptname:'Electrical and Electronics Engineering',sem:'1'},
+			success: function(data){
+				console.log(data);
+				var jsondata = JSON.stringify(data);
+				console.log(jsondata);
+				$('#div1').text(JSON.stringify(data));
+				subjectList = data ;
+				setCgpa();
+				sendPost(JSON.stringify(subjectList));
+			}
+		});
+		
+	function setCgpa(){
+		var newsub = {} ;
+		console.log(subjectList);
+		for(var sub in subjectList){
+			console.log(sub);
+			subjectList[sub].grade = 'A';
+			newsub[ subjectList[sub].subjectCode ] = subjectList[sub];
+		}
+		console.log(subjectList['PHY']);
+		console.log(newsub);
+		
+	}	
+		
+	function sendPost(jsondata){
+		console.log(jsondata);
+		$.ajax({
+			method:'POST',
+			url:'cgpa',
+			data:{reqJson:jsondata},
+			success: function(data){
+				console.log(data);
+				$('#div2').text(JSON.stringify(data));
+			}
+		});
+	}	
+		
+	});
+		
+	});
+	
+</script>
