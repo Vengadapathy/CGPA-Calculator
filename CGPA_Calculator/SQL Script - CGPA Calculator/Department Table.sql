@@ -13,11 +13,13 @@ create table department(
     select * from department 
 		inner join course on course.courseid = department.courseid
         inner join domain on domain.domainid = course.domainid
-        where deptcode = 'eee' ;
+        where deptname = 'Electrical and Electronics Engineering' ;
     
 	truncate table department ;
     
     
     insert into department (deptname,deptcode,courseid) values ("Electrical and Electronics Engineering",'EEE','100');
     insert into department (deptname,deptcode,courseid) values ("Electronics and Communication Engineering",'ECE','100');
+	insert into department (deptname,deptcode,courseid) values ("Computer Science and Engineering",'CSE','100');
+    insert into department (deptname,deptcode,courseid) values ("Instrumentation and Control Engineering",'ICE','100');
     
